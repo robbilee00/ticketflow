@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Satisfy&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Catamaran:wght@100..900&family=Satisfy&display=swap" rel="stylesheet">
+</head>
+<body>
+     <!-- Header Section -->
+     <header class="header">
+        <a href="/" class="logo-container">
+            <img src="https://s3683022-assignment3.s3.amazonaws.com/robslogo.png" alt="logo" class="profile-picture">
+            <h1 class="satisfy-regular">TicketFlow</h1>
+        </a>
+        <form class="search-bar" action="/search" method="GET">
+            <input type="text" name="search_query" placeholder="Search ticket number..." class="search-bar">
+            <button type="submit" class="search-button">Search</button>
+        </form>
+        <div class="new-ticket">
+            <a href="/new_ticket"><i class="fas fa-plus-circle"></i></a>
+        </div>
+        <div class="profile">
+            <img src="https://s3683022-assignment3.s3.amazonaws.com/usericon.png" alt="Profile Picture" class="profile-picture" id="profile-picture">
+            <div class="dropdown-content" id="logout-dropdown">
+                <a href="/logout">Logout</a>
+            </div>
+            <span>{{ user_name }}</span>
+        </div>
+
+    </header>
+
+    <h2>Search Results</h2>
+
+    <div>
+        <button onclick="showAllTickets( {{ tickets }} )"> All Tickets</button> 
+        <button onclick="showMyTickets( {{ tickets }} , {{ user_name }} )">My Tickets</button> 
+    </div>
+
+    <ul id="ticketList">
+        {% if query_data %}
+        {% for ticket in query_data %}
+            <li class="ticket-item">
+                <div class="ticket-details">
+                    <div class="ticket-number">Ticket Number: {{ ticket.ticket_number }}</div>
+                    <div class="ticket-description">Description: {{ ticket.description }}</div>
+                    <div class="ticket-assignee">Assignee: {{ ticket.assignee }}</div>
+                </div>
+                <a href="/ticket/{{ ticket.id }}" class="view-details">View Details</a>
+            </li>
+        {% endfor %}
+    {% else %}
+        <li>No search results returned</li>
+    {% endif %}
+    </ul>
+
+</body>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</html>

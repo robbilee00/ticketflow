@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ticket Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Satisfy&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Catamaran:wght@100..900&family=Satisfy&display=swap" rel="stylesheet">
+</head>
+<body>
+     <!-- Header Section -->
+     <header class="header">
+        <a href="/" class="logo-container">
+            <img src="https://s3683022-assignment3.s3.amazonaws.com/robslogo.png" alt="logo" class="profile-picture">
+            <h1 class="satisfy-regular">TicketFlow</h1>
+        </a>
+        <form class="search-bar" action="/search" method="GET">
+            <input type="text" name="search_query" placeholder="Search ticket number..." class="search-bar">
+            <button type="submit" class="search-button">Search</button>
+        </form>
+        <div class="new-ticket">
+            <a href="/new_ticket"><i class="fas fa-plus-circle"></i></a>
+        </div>
+        <div class="profile">
+            <img src="https://s3683022-assignment3.s3.amazonaws.com/usericon.png" alt="Profile Picture" class="profile-picture" id="profile-picture">
+            <div class="dropdown-content" id="logout-dropdown">
+                <a href="/logout">Logout</a>
+            </div>
+            <span>{{ user_name }}</span>
+        </div>
+
+    </header>
+
+    <!-- Main Content Section -->
+    
+    <main class="main-content">
+        <form action="/update_ticket" method="POST" enctype="multipart/form-data">
+                        <!-- Create Ticket Button -->
+        
+        <!-- Top Area -->
+        <section class="top-area">
+            <div class="form-group">
+                <label for="ticket-number" class="form-label">Ticket Number:</label>
+                <input type="text" id="ticket-number" name="ticket_number" class="form-input" value="{{ ticket.ticket_number }}" readonly style="background-color: #f2f2f2;">
+            </div>
+            <div class="form-group">
+                <label for="status" class="form-label">Status:</label>
+                <select id="status" class="form-select" name="status">
+                    <option value="new" {% if ticket.status == 'new' %} selected {% endif %}>New</option>
+                    <option value="in_progress" {% if ticket.status == 'in_progress' %} selected {% endif %}>In Progress</option>
+                    <option value="closed" {% if ticket.status == 'closed' %} selected {% endif %}>Closed</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="assign-to" class="form-label">Assign to:</label>
+                <select id="assign-to" class="form-select" name="assignee">
+                    {% for user in users %}
+                        <option value="{{ user }}" {% if user == ticket.assignee %} selected {% endif %}>{{ user }}</option>
+                    {% endfor %}
+
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="raised_by" class="form-label">Raised By:</label>
+                <input type="text" id="raised_by" name="raised_by" class="form-input" value="{{ ticket.raised_by }}" readonly style="background-color: #f2f2f2;">
+            </div>
+            <div class="form-group">
+                <label for="created_on" class="form-label">Created Date:</label>
+                <input type="text" id="created_on" name="created_on" class="form-input" value="{{ ticket.created_on }}" readonly style="background-color: #f2f2f2;">
+            </div>
+        </section>
+        <div class="form-group">
+            <label for="description" class="form-label">Description:</label>
+            <textarea id="description" class="form-textarea" name="description" placeholder="Enter ticket description...">{{ ticket.description }}</textarea>
+        </div>
+       
+
+        <!-- Bottom Area -->
+        <section class="bottom-area">
+            <div class="comments">
+                <label for="comments" class="form-label">Comments:</label>
+                <div class="comment-list">
+                    {% for comment in ticket.comments %}
+                    <div class="comment-box">
+                        <p>{{ comment.message }}</p>
+                        <p><em style="font-size: 0.8em;">From {{ comment.username }} on {{ comment.created_on }}</em></p>
+                    </div>
+                    {% endfor %}
+                </div>
+                <!-- Input field for adding a new comment -->
+                <div class="form-group">
+                    <textarea id="comment" name="comment" placeholder="Add a new comment..."></textarea>
+                </div>
+            </div>
+            <div class="attachments">
+                <label for="attachments" class="form-label">Attachments:</label>
+                <div class="attachment-list">
+                    {% for attachment in ticket.attachments %}
+                    <div class="attachment-box">
+                        <a href="{{ attachment.url }}" download>{{ attachment.url }}</a>
+                        <p class="form-group"><em style="font-size: 0.8em;">From {{ attachment.username }} on {{ attachment.created_on }}</em></p>
+                    </div>
+                    {% endfor %}
+                </div>
+                <!-- File upload field for adding a new attachment -->
+                <div class="form-group">
+                    <label for="new-attachment" class="file-label">Add Attachment:</label>
+                    <input type="file" id="attachment" name="attachment" class="file-upload" accept="image/*, .pdf, .doc, .docx">
+                </div>
+            </div>
+        </section>
+        <div class="savebutton">
+            <button type="submit" id="save-btn">Save</button>
+        </div>        
+        </form>
+        <form action="/delete_ticket/{{ ticket.id }}" method="POST">
+            <div class="savebutton">
+                <button type="submit" id="delete-btn" name="delete">Delete</button>
+            </div>
+        </form>
+    </main>
+
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    </body>
+</html>
